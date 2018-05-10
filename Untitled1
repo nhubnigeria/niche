@@ -1,0 +1,48 @@
+public function signup(Request $request){
+        $this->validate($request, [
+           'email'  => 'required|unique:users',
+           'first_name' => 'required',
+           'last_name' => 'required',
+           'phone' => 'required',
+           'organisation' => 'required',
+           'position' => 'required',
+        
+        ]);
+
+        $password = $this->randomString(8);
+        
+        $userDetails = [
+            'email' => strtolower($request->email),
+            'password' => $password,
+            'first_name' => strtolower($request->first_name),
+            'last_name' => strtolower($request->last_name),
+            'phone' => $request->phone,
+            'organisation' => $request->organisation,
+            'department' => $request->department,
+            'position' => $request->position,
+            'username' => $request->username,
+        ];
+        
+        try {
+            $user = Sentinel::registerAndActivate($userDetails);
+            $role = Sentinel::findRoleBySlug('user');
+            $role->users()->attach($user);
+            if($user) {
+                $ActivationEmail = new Email();
+                $emaildata = array('email'=> $user->email, 'user' => $user, 'password' => $password);
+                $ActivationEmail->sendConfirmationPassword($emaildata);
+                return redirect()->route('login')->with('success', 'Registration Successful, An email has been sent to you');
+            } else {
+                return back()->withInput()->with('error', 'Registration failed. Try again!');
+            }
+        } catch(\Exception $e) {
+            return redirect()->back()->with('error', 'Errors encountered, please try again!');
+        }
+
+        
+
+        // $user = $this->repo->create($request);
+        // $code = DB::table('activations')->where('user_id', $user->id)->first();
+        // \Mail::to($user)->send(new ActivationMail($user, $code));
+
+    }
