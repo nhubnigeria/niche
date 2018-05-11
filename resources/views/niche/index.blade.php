@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('oldlayouts.main')
 @section('content')
     <div id="id01" class="modal">
         <div class="modal-dialog">
@@ -28,16 +28,18 @@
             <div class="modal-content">
                 <a href="#" class="closebtn">×</a>
                 <h3>Log In</h3>
+                {{Form::open(['route' => 'perform_login', 'method' => 'POST'])}}
                 <div class="fields">
                     <img src="{{ asset('assets/img/email.png') }}" alt="">
-                    <input type="email" id="Email" placeholder="Email Address">
+                    <input type="email"name="email" id="Email" placeholder="Email Address">
                 </div>
                 <div class="fields">
                     <img src="{{ asset('assets/img/email.png') }}" alt="">
-                    <input type="password" id="Password" placeholder="Password">
+                    <input type="password" name="password" id="Password" placeholder="Password">
                 </div>
                 <p><a id="forgotPass" href="#id03">Forgot password? Click here</a>.</p>
-                <input class="modSign" id="buttonSignin" type="submit" value="LOG IN">
+                <input class="modSign" type="submit" value="LOG IN">
+                {{Form::close()}}
                 <hr>
                 <h4>New to Niche?</h4>
                 <a id="toLogIn" href="#id01">SIGN UP</a>

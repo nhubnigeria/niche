@@ -21,6 +21,9 @@ Route::get('test', function() {
     return view('test');
 })->name('login');
 
+Route::post('/login', 'Auth\LoginController@login')->name('perform_login');
+Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
+
 //Users routes
 Route::group(['prefix' => 'user', 'middleware' =>[/*'logged.in'*/]], function() {
     Route::get('/', 'UserController@index')->name('users');
@@ -37,7 +40,7 @@ Route::group(['prefix' => 'couriers', 'middleware' =>[/*'logged.in'*/]], functio
     Route::get('/delete/{id}', 'CourierController@delete')->name('delete_courier');
 });
 
-//Couriers routes
+//Categories routes
 Route::group(['prefix' => 'categories', 'middleware' =>[/*'logged.in'*/]], function() {
     Route::get('/', 'CategoryController@index')->name('categories');
     Route::post('/create', 'CategoryController@store')->name('store_category');
@@ -45,7 +48,7 @@ Route::group(['prefix' => 'categories', 'middleware' =>[/*'logged.in'*/]], funct
     Route::get('/delete/{id}', 'CategoryController@delete')->name('delete_category');
 });
 
-//Couriers routes
+//Sub-Categories routes
 Route::group(['prefix' => 'sub-categories', 'middleware' =>[/*'logged.in'*/]], function() {
     Route::get('/', 'SubCategoryController@index')->name('sub_categories');
     Route::post('/create', 'SubCategoryController@store')->name('store_sub_category');
@@ -56,6 +59,10 @@ Route::group(['prefix' => 'sub-categories', 'middleware' =>[/*'logged.in'*/]], f
 Route::get('/', function() {
     return view('welcome');
 })->name('index');
+
+Route::get('/landing', function() {
+    return view('niche.index');
+})->name('landing');
 
 Route::get('/add', function() {
     return view('niche.add');

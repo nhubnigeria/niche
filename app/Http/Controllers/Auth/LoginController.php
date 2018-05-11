@@ -21,11 +21,6 @@ class LoginController extends Controller
     |
     */
     
-    public function test() {
-        $names = User::all();
-        return json_encode($names);
-    }
-    
     public function login(Request $request) {
         try {
             $credentials = [
@@ -33,32 +28,34 @@ class LoginController extends Controller
                 'password' => $request->password,
             ];
             $user = Sentinel::authenticate($credentials);
-            $test = Sentinel::login($user);
-            return response()->json($test);
-            // if (!$user) {
-            //     return back()
-            //             ->withInput()
-            //             ->with('error', 'Oops!, Wrong login credentials!');
-            // } else {
-            //     Sentinel::login($user);
-            //     try {
-            //         if (Sentinel::inRole('admin')) {
-            //             session(['currentUserRole' => 'admin']);
-            //             session(['currentUserId' => $user->id]);
-            //             return redirect()->route('projects');
-            //         } elseif(Sentinel::inRole('user')) {
-            //             session(['currentUserRole' => 'user']);
-            //             session(['currentUserId' => $user->id]);
-            //             return redirect()->route('projects');
-            //         }
-            //     } catch (BadMethodCallException $e) {
-            //         return redirect()->route('login')
-            //                 ->with('error', 'Your Session has expired. Please login again!');
-            //     }
-            // }
+            
+            if (!$user) {
+                return back()
+                        ->withInput()
+                        ->with('login_error', 'Oops!, Wrong login credentials!');
+            } else {
+                Sentinel::login($user);
+                try {
+                    if (Sentinel::inRole('admin')) {
+                        session(['currentUserRole' => 'admin']);
+                        session(['currentUserId' => $user->id]);
+                        return redirect()->route('couriers');
+                    } elseif(Sentinel::inRole('vendor')) {
+                        session(['currentUserRole' => 'vendor']);
+                        session(['currentUserId' => $user->id]);
+                        return redirect()->route('sub-categories');
+                    } elseif(Sentinel::inRole('user')) {
+                        session(['currentUserRole' => 'user']);
+                        session(['currentUserId' => $user->id]);
+                        return redirect()->route('categories');
+                    }
+                } catch (BadMethodCallException $e) {
+                    return redirect()->route('login')
+                            ->with('error', 'Your Session has expired. Please login again!');
+                }
+            }
         } catch(Exception $e) {
-            // return redirect()->route('login');
-            return response()->json(null, 204);
+            return redirect()->route('login');
         }
     }
     
@@ -66,16 +63,12 @@ class LoginController extends Controller
       try {
           Sentinel::logout(null, true);
           session()->flush();
-            //   return redirect()->route('login');
-            return response()->json(null, 204);      
-          
+          return redirect()->route('landing');
       } catch (\Cartalyst\Sentinel\Checkpoints\NotActivatedException $e) {
-        //   return redirect()->route('login');
-        return response()->json(null, 204);      
+          return redirect()->route('landing');
       } catch (\ErrorException $e) {
-        //   return redirect()->route('login')
-        //       ->with('error', 'Session expired. Login again!');
-        return response()->json(null, 204);      
+          return redirect()->route('landing')
+              ->with('error', 'Session expired. Login again!');
       }
     }
 }

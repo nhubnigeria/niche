@@ -20,6 +20,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 //Route has a /api prefix so has to be added when calling it
 //For example 192.168.10.10/api/login or localhost::8000/api/login
 
-Route::post('/login', 'Auth\LoginController@login');
-Route::get('/test', 'Auth\LoginController@test');
-Route::get('/logout', 'Auth\LoginController@logout');
+Route::post('/login', 'APIController@login');
+Route::get('/test', 'APIController@test');
+Route::get('/logout', 'APIController@logout');
